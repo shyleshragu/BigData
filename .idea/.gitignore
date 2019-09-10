@@ -3,5 +3,6 @@
 /misc.xml
 /modules.xml
 /vcs.xml
-/$PRODUCT_WORKSPACE_FILES
+/$PRODUCT_WORKSPACE_FILE$
 /BigData.iml
+/$PRODUCT_WORKSPACE_FILE$
