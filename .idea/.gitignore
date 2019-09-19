@@ -8,3 +8,4 @@
 /$PRODUCT_WORKSPACE_FILE$
 /Scala/.idea
 /Scala/target
+/Scala/src/main/scala/ca/jrvs/learningScala.sc
