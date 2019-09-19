@@ -6,3 +6,5 @@
 /$PRODUCT_WORKSPACE_FILE$
 /BigData.iml
 /$PRODUCT_WORKSPACE_FILE$
+/Scala/.idea
+/Scala/target
