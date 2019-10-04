@@ -104,8 +104,7 @@ var badsource = {
 }                                           ```-> returns "hotline bling"```
 var sources = {
   s"$first hello"
-}                                           ```-> ERROR. Variables defined within an expression are local to the expression 
-                                                and cannot be accessed outside the expression.```
+}                                           ```-> ERROR. Variables defined within an expression are local to the expression and cannot be accessed outside the expression.```
 ### Functions
 - expressions that take parameters
 > val addOne = (x: Int) => x + 1                //1 parameter
@@ -145,6 +144,24 @@ Multiline functions require brackets.
 }
 println(airplane(company = "Delta"))                ```-> Returns The plabe belongs to Delta```
 
+#### Higher Order Functions
+- take other functions as parameters or return a function
+- possible because functions are first-class values in scala
+> val salaries = Seq(20000, 70000, 40000)
+  val doubleSalary = (x: Int) => x * 2
+  val newSalaries = salaries.map(doubleSalary)                  ```map -> higher order function! doubleSalary gets applied to each element in list salaries```
+
+> val salaries = Seq(20, 70, 40)
+  val newSalaries = salaries.map(x => x * 2)                     ```List(40,140,80)```
+  val newSalaries2 = salaries.map(_*2)                           ```List(40,140,80)```
+
+##### Methods into function
+- pass methods as arguments to higer-order functions
+- because, Scala compiler will coerce the method into a function
+> case class WeeklyWeatherForecast(temperatures: Seq[Double]) { 
+    private def convertCtoF(temp: Double) = temp * 1.8 + 32
+    def forecastInFahrenheit: Seq[Double] = temperatures.map(convertCtoF)       ```passing the method convertCtoF```
+  }
 
 ### Methods
 - similar to functions except defined by ```def``` keyword and followed by name, parameters, retrun type and body.
@@ -316,6 +333,32 @@ iterator.next()                                             ```1```
   println(d.message)                            ```I'm an instance of class B```
   println(d.loudMessage)                        ```I'M AN INSTANCE OF CLASS B```
 - class D has a superclass B and mixin C
+
+
+> abstract class AbsIterator {                   ```a class with abstract type and standard iterator methods```
+    type T
+    def hasNext: Boolean
+    def next(): T
+  }
+  class StringIterator(s: String) extends AbsIterator {     ```concrete class with all abstract members```
+    type T = Char                                           ```Used to iterate over the s: String```
+    private var i = 0
+    def hasNext = i < s.length
+    def next() = {
+      val ch = s charAt i
+      i += 1
+      ch
+    }
+  }
+  trait RichIterator extends AbsIterator {          ```continously calls function f: T => Unit on next() element while(hasNext) is true```
+    def foreach(f: T => Unit): Unit =
+      while (hasNext)
+        f(next())
+  }
+  class RichStringIter extends StringIterator("Scala") with RichIterator    ```combined functionality of StringIterator and RichIterator into 1 class```
+>                                                                           ```for RichStringIter: StringIterator is superclass and RichIterator is mixin```
+  val richStringIter = new RichStringIter
+  richStringIter foreach println
 
 #### Subtyping
 >import scala.collection.mutable.ArrayBuffer
