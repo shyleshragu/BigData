@@ -56,6 +56,13 @@ true || false   ```-> true```
 var f = "4.44".toFloat  ```-> string converted to float```
 77.toString == "77"     ```-> true```
 
+### Parameters
+#### Implicit Parameters
+- it means that if no value is supplied when called, the compiler will look for an implicit value and pass it in for you
+> def execute(arg: Int)(implicit ec: scala.concurrent.ExecutionContext) = ???
+
+#### Partial Application
+- method is called with a fewer number of parameter lists, then this will yield a function taking the missing parameter lists as its arguments.
 
 ### Expressions
 #### Blocks
@@ -107,6 +114,7 @@ var sources = {
 }                                           ```-> ERROR. Variables defined within an expression are local to the expression and cannot be accessed outside the expression.```
 ### Functions
 - expressions that take parameters
+- express behaviours or data transformations
 > val addOne = (x: Int) => x + 1                //1 parameter
 > val add = (x: Int, y: Int) => x + y           //multiple parameter
 > val getTheAnswer = () => 42                   //no parameter
@@ -147,6 +155,7 @@ println(airplane(company = "Delta"))                ```-> Returns The plabe belo
 #### Higher Order Functions
 - take other functions as parameters or return a function
 - possible because functions are first-class values in scala
+- used to reduce redundant code
 > val salaries = Seq(20000, 70000, 40000)
   val doubleSalary = (x: Int) => x * 2
   val newSalaries = salaries.map(doubleSalary)                  ```map -> higher order function! doubleSalary gets applied to each element in list salaries```
@@ -155,22 +164,76 @@ println(airplane(company = "Delta"))                ```-> Returns The plabe belo
   val newSalaries = salaries.map(x => x * 2)                     ```List(40,140,80)```
   val newSalaries2 = salaries.map(_*2)                           ```List(40,140,80)```
 
-##### Methods into function
+##### Coercing Methods into function
 - pass methods as arguments to higer-order functions
 - because, Scala compiler will coerce the method into a function
 > case class WeeklyWeatherForecast(temperatures: Seq[Double]) { 
     private def convertCtoF(temp: Double) = temp * 1.8 + 32
     def forecastInFahrenheit: Seq[Double] = temperatures.map(convertCtoF)       ```passing the method convertCtoF```
+  }                                                                             ```compiler coerces convertCtoF to the function x => convertCtoF(x)```
+
+##### Functions that accepts functions
+- build generic mechanisms
+- the generic operations defer to lock down the entire operation behaviour giving clients a way to control or further customize parts of the operation
+> object SalaryRaiser { 
+    def smallPromotion(salaries: List[Double]): List[Double] =
+      salaries.map(salary => salary * 1.1)
+    def greatPromotion(salaries: List[Double]): List[Double] =
+      salaries.map(salary => salary * math.log(salary))
+    def hugePromotion(salaries: List[Double]): List[Double] =
+      salaries.map(salary => salary * salary)
   }
+
+The above functions can be transformed into higher-order function:
+>  object SalaryRaiser {
+     private def promotion(salaries: List[Double], promotionFunction: Double => Double): List[Double] =     ```Double => Double - functions that takes a Double and returns a Double```
+       salaries.map(promotionFunction)
+     def smallPromotion(salaries: List[Double]): List[Double] =
+       promotion(salaries, salary => salary * 1.1)
+     def greatPromotion(salaries: List[Double]): List[Double] =
+       promotion(salaries, salary => salary * math.log(salary))
+     def hugePromotion(salaries: List[Double]): List[Double] =
+       promotion(salaries, salary => salary * salary)
+   }
+
+##### Functions that return functions
+> def urlBuilder(ssl: Boolean, domainName: String): (String, String) => String = {          ```(String, String) => String  - takes 2 stings and retruns a string```
+    val schema = if (ssl) "https://" else "http://"
+    (endpoint: String, query: String) => s"$schema$domainName/$endpoint?$query"             ```returned ananymous function```
+  }
+  val domainName = "www.example.com"
+  def getURL = urlBuilder(ssl=true, domainName)
+  val endpoint = "users"
+  val query = "id=1"
+  val url = getURL(endpoint, query)
 
 ### Methods
 - similar to functions except defined by ```def``` keyword and followed by name, parameters, retrun type and body.
 - def + name + (parameters) + : + return type + = + body
 - last line in body is method's return value
 - 1 parameter, multiple parameter, no parameter
+- express behaviours or data transformations
 > def add(x: Int, y: Int): Int = x + y                                                      //parameters 
 > def name: String = System.getProperty("user.name")                                        //no parameters
 
+#### Nested Methods
+- a factorial method for computing the factorial of a given number
+> def factorial(x: Int): Int = {
+      def fact(x: Int, accumulator: Int): Int = {
+        if (x <= 1) accumulator
+        else fact(x - 1, x * accumulator)
+      }  
+      fact(x, 1)
+   } 
+   println(factorial(2))           ```2```
+   println(factorial(3))           ```6```
+
+#### Multiple Parameter Lists
+> def foldLeft[B](z: B)(op: (B, A) => B): B         ```applies a two-parameter function op to an initial value z and all elements of this collection, going left to right```
+
+>  val numbers = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+   val res = numbers.foldLeft(0)((m, n) => m + n)       ```starting with initial value of 0. Applies the fubction (m,n) => m + n to each element in the list and previous accumalated value```
+   println(res)
 
 ### Classes
 - class + name + (constructor parmeters)
@@ -207,18 +270,23 @@ greeter.greet("the great")                                  ```-> he the great m
 
 
 #### Case class
-- immutable and compared by value
+- immutable 
+- compared by value, i.e., compared by structure and not by reference
 - can be instantiated without use of new keyword
 
-> case class Point(x: Int, y: Int)
+> case class Point(x: Int, y: Int)          ```parameters are pulbic```
 > val point = Point(1,2)                    ```instantiated without new keyword```
-> val point1 = Point(1,3)
+> val point1 = Point(1,3)                   
 > if (point == point1){
 >   println(point + "&" + point1 + ": true")
 >} else {
 >   println("false")
 >}
 
+> case class Message(sender: String, recipient: String, body: String) 
+  val message2 = Message("jorge", "guillaume", "Com")
+  val message3 = Message("jorge", "guillaume", "Com")
+  val messagesAreTheSame = message2 == message3     ```true! message2 & message3 refer to different objects but equal value"```
 
 #### Object
 - basically singletons of their own objects
@@ -235,7 +303,6 @@ greeter.greet("the great")                                  ```-> he the great m
 >println(newID)                                     ```1```
 >val newID2: Int = IdFactory.create()
 >println(newID2)                                    ```2```
-
 
 > object Cake {
     var base = "cook"
@@ -549,6 +616,8 @@ Apply method is special and is called by default if the method name is not speci
 
 ---
 ### Scala Type Hierarchy
+![Unified Types Diagram](https://github.com/shyleshragun/BigData/blob/master/images/unified-types-diagram.png)
+
 #### Any
 - top type
 - supertype of all types
@@ -588,6 +657,9 @@ list.foreach(element => println(element))                       ```732
 
 ### Casting
 - unidirectional
+
+![Type Casting](https://github.com/shyleshragun/BigData/blob/master/images/type-casting-diagram.png)
+
 byte -> short -> int -> long -> float -> double
 char -> int
 
@@ -668,4 +740,4 @@ eg.
 https://www.codequizzes.com/scala/tutorial
 https://docs.scala-lang.org/tour/basics.html
 https://docs.scala-lang.org/tour/unified-types.html
-
+https://twitter.github.io/scala_school/index.html
