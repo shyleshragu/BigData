@@ -10,10 +10,10 @@ To run application:
 ### Print
 println(....)
 
-println(1)                  ```-> 1```
-println(1 + 1)              ```-> 2```
-println("Hel")              ```-> Hel```
-println("Hel," + " wor")    ```-> Hel, wor```
+> println(1)                  ```-> 1```
+> println(1 + 1)              ```-> 2```
+> println("Hel")              ```-> Hel```
+> println("Hel," + " wor")    ```-> Hel, wor```
 
 
 ### Variable Assignment
