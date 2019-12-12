@@ -3,7 +3,7 @@
 This repository contains programs done in:
 1) Hive
 2) Scala
-3) Spark
+
 
 The objective was to run various commands on the different data warehouse services and obtain an understanding on how they work.
 
@@ -18,14 +18,4 @@ Hive was connected to the terminal by using command line tools (like ssh) and JD
 
 
 ## Scala
-
-
-
-
-
-## Spark
-
-
-
-
 
