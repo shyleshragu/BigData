@@ -19,3 +19,6 @@ Hive was connected to the terminal by using command line tools (like ssh) and JD
 
 ## Scala
 
+Scala is a high-level programming language that combines object-oriented and functional programming. It is highly efficient to use due to the standard JVM features and Java libraries.
+
+Various commands, variables, functions, methods and classes were created and tested for practice. 
